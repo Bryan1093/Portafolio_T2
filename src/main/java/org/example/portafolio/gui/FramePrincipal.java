@@ -136,9 +136,7 @@ public class FramePrincipal extends JFrame {
         tabbedPane.addTab("Análisis de Imagen", new PanelEjecutorTema(this, new String[] {
                 "Histograma"
         }));
-        tabbedPane.addTab("Ecualizador (Proyecto Extra)", new PanelEjecutorTema(this, new String[] {
-                "MainEqualizador (Abrir Interfaz de Ecualización)"
-        }));
+        tabbedPane.addTab("Ecualizador (Proyecto Extra)", crearPanelEcualizador());
 
         tabbedPane.addTab("Generadores (Gradiente/Ruido)", crearPanelGeneradores());
 
@@ -560,6 +558,86 @@ public class FramePrincipal extends JFrame {
             }
         });
 
+        return panel;
+    }
+
+    private JPanel crearPanelEcualizador() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        
+        JPanel pnlCenter = new JPanel();
+        pnlCenter.setLayout(new BoxLayout(pnlCenter, BoxLayout.Y_AXIS));
+        pnlCenter.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(80, 80, 80), 1, true),
+            BorderFactory.createEmptyBorder(40, 40, 40, 40)
+        ));
+        pnlCenter.setBackground(new Color(30, 30, 30));
+        
+        JLabel lblTitulo = new JLabel("Ecualizador de Imagen");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(new Color(138, 180, 248));
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel lblSub = new JLabel("Proyecto de Ecualización de Canales y Modos de Color");
+        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblSub.setForeground(new Color(180, 180, 180));
+        lblSub.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JTextArea txtDesc = new JTextArea(
+            "Este proyecto extra permite ecualizar histogramas interactivos de imágenes.\n" +
+            "Soporta:\n" +
+            "• Modos de Color: RGB, HSB, y Escala de Grises.\n" +
+            "• Histogramas dinámicos de entrada y salida en tiempo real.\n" +
+            "• Modos avanzados de ecualización y procesamiento.\n\n" +
+            "Presiona el botón de abajo para iniciar la aplicación del ecualizador independiente."
+        );
+        txtDesc.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        txtDesc.setForeground(new Color(160, 160, 160));
+        txtDesc.setEditable(false);
+        txtDesc.setOpaque(false);
+        txtDesc.setMargin(new Insets(15, 0, 15, 0));
+        txtDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JButton btnOpen = new JButton("Abrir Interfaz de Ecualizador");
+        btnOpen.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnOpen.putClientProperty("JButton.buttonType", "roundRect");
+        btnOpen.putClientProperty("JButton.boldText", true);
+        btnOpen.setBackground(new Color(52, 168, 83));
+        btnOpen.setForeground(Color.WHITE);
+        btnOpen.setPreferredSize(new Dimension(250, 45));
+        btnOpen.setMaximumSize(new Dimension(250, 45));
+        btnOpen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        btnOpen.addActionListener(e -> {
+            try {
+                // Disable interceptor to let the equalizer load its own files
+                ImageIOManager.setInterceptEnabled(false);
+                
+                // Invoke MainEqualizador.main(new String[0]) using reflection
+                Class<?> clazz = Class.forName("org.example.portafolio.ejercicios.ecualizador.MainEqualizador");
+                Method mainMethod = clazz.getMethod("main", String[].class);
+                mainMethod.invoke(null, (Object) new String[0]);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Error al abrir el ecualizador: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        
+        pnlCenter.add(lblTitulo);
+        pnlCenter.add(Box.createVerticalStrut(10));
+        pnlCenter.add(lblSub);
+        pnlCenter.add(Box.createVerticalStrut(20));
+        pnlCenter.add(txtDesc);
+        pnlCenter.add(Box.createVerticalStrut(25));
+        pnlCenter.add(btnOpen);
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.NONE;
+        
+        panel.add(pnlCenter, gbc);
         return panel;
     }
 
