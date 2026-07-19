@@ -55,10 +55,12 @@ public class FramePrincipal extends JFrame {
             Map.entry("Histograma", "org.example.portafolio.ejercicios.histograma"),
             Map.entry("Imagen", "org.example.portafolio.ejercicios.colores"),
             Map.entry("matrizDeColores", "org.example.portafolio.ejercicios.colores"),
+            Map.entry("RgbCmyk", "org.example.portafolio.ejercicios.colores"),
             Map.entry("personalizada", "org.example.portafolio.ejercicios.efectos"),
             Map.entry("transparencia", "org.example.portafolio.ejercicios.transparencia"),
             Map.entry("transparencia2", "org.example.portafolio.ejercicios.transparencia"),
-            Map.entry("MainEqualizador", "org.example.portafolio.ejercicios.ecualizador"));
+            Map.entry("MainEqualizador", "org.example.portafolio.ejercicios.ecualizador"),
+            Map.entry("OpenGLDemo", "org.example.portafolio.ejercicios.opengl"));
 
     public FramePrincipal() {
         super("Portafolio de Procesamiento de Imágenes — Taller 2");
@@ -117,7 +119,8 @@ public class FramePrincipal extends JFrame {
         tabbedPane.addTab("Ajustes de Color", new PanelEjecutorTema(this, new String[] {
                 "matrizDeColores (Filtros de Color)",
                 "ejemploClase (Lectura y Escritura)",
-                "Imagen (Copia y Pixeles)"
+                "Imagen (Copia y Pixeles)",
+                "RgbCmyk (Espacio de Color CMYK)"
         }));
 
         tabbedPane.addTab("Deberes y Efectos Retro", new PanelEjecutorTema(this, new String[] {
@@ -143,6 +146,7 @@ public class FramePrincipal extends JFrame {
         tabbedPane.addTab("Ecualizador (Proyecto Extra)", crearPanelEcualizador());
 
         tabbedPane.addTab("Generadores (Gradiente/Ruido)", crearPanelGeneradores());
+        tabbedPane.addTab("Gráficos 3D (OpenGL)", crearPanelOpenGL());
 
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
 
@@ -632,6 +636,117 @@ public class FramePrincipal extends JFrame {
         pnlCenter.add(Box.createVerticalStrut(20));
         pnlCenter.add(txtDesc);
         pnlCenter.add(Box.createVerticalStrut(25));
+        pnlCenter.add(btnOpen);
+        
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.NONE;
+        
+        panel.add(pnlCenter, gbc);
+        return panel;
+    }
+
+    private JPanel crearPanelOpenGL() {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        
+        JPanel pnlCenter = new JPanel();
+        pnlCenter.setLayout(new BoxLayout(pnlCenter, BoxLayout.Y_AXIS));
+        pnlCenter.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(80, 80, 80), 1, true),
+            BorderFactory.createEmptyBorder(40, 40, 40, 40)
+        ));
+        pnlCenter.setBackground(new Color(30, 30, 30));
+        
+        JLabel lblTitulo = new JLabel("Visualizador 3D OpenGL");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 24));
+        lblTitulo.setForeground(new Color(138, 180, 248));
+        lblTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JLabel lblSub = new JLabel("Aceleración por Hardware Gráfico y Z-Buffer/W-Buffer");
+        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblSub.setForeground(new Color(180, 180, 180));
+        lblSub.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JTextArea txtDesc = new JTextArea(
+            "Esta demostración interactiva está construida en LWJGL 3 (Lightweight Java Game Library).\n" +
+            "Soporta:\n" +
+            "• Renderizado 3D de cubo texturizado sobre el plano de proyección.\n" +
+            "• Simulación en shaders de profundidad (Z-Buffer vs W-Buffer).\n" +
+            "• Controles interactivos:\n" +
+            "   [ESC] - Salir de la demo\n" +
+            "   [L]   - Alternar Z-Buffer / W-Buffer simulado\n" +
+            "   [F]   - Activar/Desactivar Z-Buffer (Algoritmo del Pintor)\n\n" +
+            "Presiona el botón de abajo para lanzar la ventana gráfica acelerada por GPU."
+        );
+        txtDesc.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        txtDesc.setForeground(new Color(160, 160, 160));
+        txtDesc.setEditable(false);
+        txtDesc.setOpaque(false);
+        txtDesc.setMargin(new Insets(15, 0, 15, 0));
+        txtDesc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JButton btnOpen = new JButton("Ejecutar Demo OpenGL (3D)");
+        btnOpen.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnOpen.putClientProperty("JButton.buttonType", "roundRect");
+        btnOpen.putClientProperty("JButton.boldText", true);
+        btnOpen.setBackground(new Color(52, 168, 83));
+        btnOpen.setForeground(Color.WHITE);
+        btnOpen.setPreferredSize(new Dimension(250, 45));
+        btnOpen.setMaximumSize(new Dimension(250, 45));
+        btnOpen.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        btnOpen.addActionListener(e -> {
+            new Thread(() -> {
+                try {
+                    Class<?> clazz = Class.forName("org.example.portafolio.ejercicios.opengl.OpenGLDemo");
+                    java.lang.reflect.Method mainMethod = clazz.getMethod("main", String[].class);
+                    mainMethod.invoke(null, (Object) new String[0]);
+                } catch (Exception ex) {
+                    SwingUtilities.invokeLater(() -> {
+                        JOptionPane.showMessageDialog(this, "Error al ejecutar la demo OpenGL: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                    });
+                }
+            }).start();
+        });
+        
+        JPanel pnlTextura = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        pnlTextura.setOpaque(false);
+        JLabel lblTextura = new JLabel("Textura activa: [Por Defecto]");
+        lblTextura.setForeground(new Color(200, 200, 200));
+        lblTextura.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        JButton btnCargar = new JButton("Cargar Textura...");
+        btnCargar.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        btnCargar.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser(new File("."));
+            chooser.setDialogTitle("Selecciona una Imagen para la Textura 3D");
+            if (chooser.showOpenDialog(panel) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    File file = chooser.getSelectedFile();
+                    BufferedImage img = ImageIO.read(file);
+                    if (img != null) {
+                        org.example.portafolio.ejercicios.opengl.OpenGLDemo.customTextureImage = img;
+                        lblTextura.setText("Textura activa: [" + file.getName() + "]");
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(panel, "Error al cargar textura: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        pnlTextura.add(lblTextura);
+        pnlTextura.add(btnCargar);
+
+        pnlCenter.add(lblTitulo);
+        pnlCenter.add(Box.createVerticalStrut(10));
+        pnlCenter.add(lblSub);
+        pnlCenter.add(Box.createVerticalStrut(20));
+        pnlCenter.add(txtDesc);
+        pnlCenter.add(Box.createVerticalStrut(15));
+        pnlCenter.add(pnlTextura);
+        pnlCenter.add(Box.createVerticalStrut(20));
         pnlCenter.add(btnOpen);
         
         GridBagConstraints gbc = new GridBagConstraints();
