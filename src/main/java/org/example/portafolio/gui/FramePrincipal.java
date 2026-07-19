@@ -39,6 +39,8 @@ public class FramePrincipal extends JFrame {
             Map.entry("Blending", "org.example.portafolio.ejercicios.transparencia"),
             Map.entry("convolucion", "org.example.portafolio.ejercicios.convoluciones"),
             Map.entry("convolucionOp", "org.example.portafolio.ejercicios.convoluciones"),
+            Map.entry("amanecer", "org.example.portafolio.ejercicios.convoluciones"),
+            Map.entry("separable", "org.example.portafolio.ejercicios.convoluciones"),
             Map.entry("kernels", "org.example.portafolio.ejercicios.convoluciones"),
             Map.entry("ejemploClase", "org.example.portafolio.ejercicios.colores"),
             Map.entry("Ejercicio_1", "org.example.portafolio.ejercicios.efectos"),
@@ -108,7 +110,9 @@ public class FramePrincipal extends JFrame {
         tabbedPane.addTab("Filtros Interactivos", crearPanelFiltrosInteractivos());
         tabbedPane.addTab("Convoluciones", new PanelEjecutorTema(this, new String[] {
                 "convolucion (Básica)",
-                "convolucionOp (ConvolveOp)"
+                "convolucionOp (ConvolveOp)",
+                "amanecer (Simulación Amanecer)",
+                "separable (Filtro Separable)"
         }));
         tabbedPane.addTab("Ajustes de Color", new PanelEjecutorTema(this, new String[] {
                 "matrizDeColores (Filtros de Color)",
