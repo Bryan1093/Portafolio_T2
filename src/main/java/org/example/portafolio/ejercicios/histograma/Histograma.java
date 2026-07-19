@@ -9,10 +9,10 @@ public class Histograma {
     public static void main(String[] args) {
 
         File file = new File("images/galaxia.jpg");
-        File file2 = new File("images/galaxiaHistoRojo.jpg");
-        File file3 = new File("images/galaxiaHistoVerde.jpg");
-        File file4 = new File("images/galaxiaHistoAzul.jpg");
-        File file5 = new File("images/galaxiaHistoCombinado.jpg");
+        File file2 = new File("images/HistoRojo.jpg");
+        File file3 = new File("images/HistoVerde.jpg");
+        File file4 = new File("images/HistoAzul.jpg");
+        File file5 = new File("images/HistoCombinado.jpg");
 
         int ancho, alto, pixel;
         int r, g, b;

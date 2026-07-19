@@ -962,6 +962,9 @@ class PanelEjecutorTema extends JPanel {
 
     private BufferedImage imgEntrada1;
     private BufferedImage imgEntrada2;
+    private BufferedImage imgEntrada3;
+    private JPanel pnlInputs;
+    private JPanel pnlIn3;
 
     public PanelEjecutorTema(FramePrincipal parentFrame, String[] items) {
         this.parentFrame = parentFrame;
@@ -985,11 +988,21 @@ class PanelEjecutorTema extends JPanel {
                 imgEntrada2 = org.example.portafolio.utils.PlaceholderImageGenerator.createDefaultImage(500, 500,
                         "Imagen B (Autogenerada)");
             }
+
+            File f3 = new File("images/galaxia2.jpg");
+            if (f3.exists()) {
+                imgEntrada3 = ImageIO.read(f3);
+            } else {
+                imgEntrada3 = org.example.portafolio.utils.PlaceholderImageGenerator.createDefaultImage(500, 500,
+                        "Imagen C (Autogenerada)");
+            }
         } catch (Exception ex) {
             imgEntrada1 = org.example.portafolio.utils.PlaceholderImageGenerator.createDefaultImage(500, 500,
                     "Imagen A (Autogenerada)");
             imgEntrada2 = org.example.portafolio.utils.PlaceholderImageGenerator.createDefaultImage(500, 500,
                     "Imagen B (Autogenerada)");
+            imgEntrada3 = org.example.portafolio.utils.PlaceholderImageGenerator.createDefaultImage(500, 500,
+                    "Imagen C (Autogenerada)");
         }
 
         DefaultListModel<String> listModel = new DefaultListModel<>();
@@ -1007,8 +1020,8 @@ class PanelEjecutorTema extends JPanel {
         pnlLeft.setPreferredSize(new Dimension(300, 0));
         pnlLeft.add(scrollList, BorderLayout.CENTER);
 
-        JPanel pnlInputs = new JPanel(new GridLayout(2, 1, 5, 5));
-        pnlInputs.setBorder(BorderFactory.createTitledBorder("Imǭgenes de Entrada para Ejercicio"));
+        pnlInputs = new JPanel(new GridLayout(0, 1, 5, 5));
+        pnlInputs.setBorder(BorderFactory.createTitledBorder("Imágenes de Entrada para Ejercicio"));
 
         String nameA = new File("images/galaxia.png").exists() ? "galaxia.png" : "Autogenerada A";
         JPanel pnlIn1 = new JPanel(new BorderLayout(5, 2));
@@ -1048,6 +1061,26 @@ class PanelEjecutorTema extends JPanel {
         });
         pnlIn2.add(lblIn2, BorderLayout.CENTER);
         pnlIn2.add(btnLoadIn2, BorderLayout.EAST);
+
+        // Setup pnlIn3
+        String nameC = new File("images/galaxia2.jpg").exists() ? "galaxia2.jpg" : "Autogenerada C";
+        pnlIn3 = new JPanel(new BorderLayout(5, 2));
+        JLabel lblIn3 = new JLabel("Img C: [" + nameC + "]");
+        JButton btnLoadIn3 = new JButton("Cargar...");
+        btnLoadIn3.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser(new File("."));
+            if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+                try {
+                    imgEntrada3 = ImageIO.read(chooser.getSelectedFile());
+                    lblIn3.setText("Img C: [" + chooser.getSelectedFile().getName() + "]");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al cargar: " + ex.getMessage(), "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        pnlIn3.add(lblIn3, BorderLayout.CENTER);
+        pnlIn3.add(btnLoadIn3, BorderLayout.EAST);
 
         pnlInputs.add(pnlIn1);
         pnlInputs.add(pnlIn2);
@@ -1123,6 +1156,25 @@ class PanelEjecutorTema extends JPanel {
             btnEjecutar.setEnabled(true);
 
             String className = selected.split(" ")[0].trim();
+            
+            // Manage Img C visibility dynamically
+            if ("transparencia".equals(className)) {
+                boolean alreadyAdded = false;
+                for (Component c : pnlInputs.getComponents()) {
+                    if (c == pnlIn3) {
+                        alreadyAdded = true;
+                        break;
+                    }
+                }
+                if (!alreadyAdded) {
+                    pnlInputs.add(pnlIn3);
+                }
+            } else {
+                pnlInputs.remove(pnlIn3);
+            }
+            pnlInputs.revalidate();
+            pnlInputs.repaint();
+
             if ("convolucion".equals(className)) {
                 cmbParam.removeAllItems();
                 cmbParam.addItem("sobel");
@@ -1155,7 +1207,7 @@ class PanelEjecutorTema extends JPanel {
             if (selected != null) {
                 String className = selected.split(" ")[0].trim();
 
-                ImageIOManager.setInputImages(imgEntrada1, imgEntrada2);
+                ImageIOManager.setInputImages(imgEntrada1, imgEntrada2, imgEntrada3);
                 ImageIOManager.clearOutputs();
 
                 if ("MainEqualizador".equals(className)) {

@@ -9,8 +9,10 @@ import javax.imageio.ImageIO;
 public class ImageIOManager {
     private static BufferedImage inputImage;
     private static BufferedImage inputImage2;
+    private static BufferedImage inputImage3;
     private static final List<OutputEntry> outputImages = new ArrayList<>();
     private static boolean interceptEnabled = true;
+    private static int readCounter = 0;
 
     public static class OutputEntry {
         public String name;
@@ -22,13 +24,15 @@ public class ImageIOManager {
         }
     }
 
-    public static void setInputImages(BufferedImage img1, BufferedImage img2) {
+    public static void setInputImages(BufferedImage img1, BufferedImage img2, BufferedImage img3) {
         inputImage = img1;
         inputImage2 = img2;
+        inputImage3 = img3;
     }
 
     public static void clearOutputs() {
         outputImages.clear();
+        readCounter = 0;
     }
 
     public static List<OutputEntry> getOutputImages() {
@@ -45,12 +49,16 @@ public class ImageIOManager {
 
     public static BufferedImage read(File file) throws IOException {
         if (interceptEnabled && inputImage != null) {
-            String path = file.getPath().toLowerCase();
-            if ((path.contains("galaxia") || path.contains("montana") || path.contains("anime")
-                    || path.contains("file2") || path.contains("2")) && inputImage2 != null) {
-                return inputImage2;
+            readCounter++;
+            if (readCounter == 1) {
+                return inputImage;
+            } else if (readCounter == 2) {
+                return inputImage2 != null ? inputImage2 : inputImage;
+            } else if (readCounter == 3) {
+                return inputImage3 != null ? inputImage3 : inputImage;
+            } else {
+                return inputImage;
             }
-            return inputImage;
         }
         
         // Fallback: If running the class directly and the file doesn't exist on disk, autogenerate a test image in memory
